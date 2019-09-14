@@ -41,8 +41,10 @@ public class WonderfulAccountSystem {
     private String input;
     private boolean encryption;
 
-    private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String MYSQL_URL = "jdbc:mysql://localhost:3306/account";
+//    private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver"; 
+//    private static final String MYSQL_URL = "jdbc:mysql://localhost:3306/secretdocument";
+    private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static final String MYSQL_URL ="jdbc:mysql://localhost:3306/" + "secretdocument" + "?useSSL=false&serverTimezone=UTC";
     private static final String MYSQL_USER = "root";
     
     private static Connection connection;
@@ -161,6 +163,7 @@ public class WonderfulAccountSystem {
         changeEditType(true);
         edit.enableInputMethods(false);//禁掉输入法
         String password = getInput();
+        
         try {
             Class.forName(MYSQL_DRIVER);
             connection = DriverManager.getConnection(MYSQL_URL,MYSQL_USER,password);
