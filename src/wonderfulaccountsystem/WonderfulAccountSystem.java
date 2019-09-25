@@ -377,6 +377,10 @@ public class WonderfulAccountSystem {
         panel.add(positionHold,BorderLayout.SOUTH);
         
         scrollPane.setViewportView(panel);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); //设置水平滚动条自动出现 
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);     //设置垂直滚动条自动出现 
+//        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);         //滚动条总是滚动到最后,但滚动条会消失
+        
         frame.add(scrollPane);
         frame.setSize(400,300);
         frame.setLocation(400, 300);			              
