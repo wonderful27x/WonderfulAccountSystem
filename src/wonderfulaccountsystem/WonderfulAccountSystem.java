@@ -350,7 +350,7 @@ public class WonderfulAccountSystem {
 
         text.setText(content);
         edit.setText("");
-        scrollToBottom();
+       
     }
     
     private void changeEditType(boolean encryption){
@@ -368,6 +368,10 @@ public class WonderfulAccountSystem {
         text = new JTextArea();
         edit = new TextField();
         
+//        Font x = new Font("宋体",Font.PLAIN,14);
+//        text.setFont(x);
+//        edit.setFont(x);
+                
         JTextArea positionHold = new JTextArea();
         positionHold.setEnabled(false);
        
@@ -449,6 +453,8 @@ public class WonderfulAccountSystem {
                 if(encryption){
                     changeEditType(true);
                 }
+            }else if(arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+                scrollToBottom();
             }
         }
 
@@ -468,7 +474,6 @@ public class WonderfulAccountSystem {
         encryption = false;
         changeEditType(false);
         edit.enableInputMethods(true);//开启输入法
-        scrollToBottom();
     }
     
     private String encryptString(String text) {
