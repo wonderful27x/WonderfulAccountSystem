@@ -40,6 +40,7 @@ public class WonderfulAccountSystem {
     private TextField edit;
     private String input;
     private boolean encryption;
+    private EncryptionAlgorithm encryptionAlgorithm; //加密算法
 
 //    private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver"; 
 //    private static final String MYSQL_URL = "jdbc:mysql://localhost:3306/secretdocument";
@@ -53,6 +54,8 @@ public class WonderfulAccountSystem {
         // TODO code application logic here
 
         WonderfulAccountSystem system = new WonderfulAccountSystem();
+        system.encryptionAlgorithm = new EncryptionAlgorithmXOR();
+                
         try{
             system.initInterface();
             system.initListener();
@@ -105,45 +108,6 @@ public class WonderfulAccountSystem {
             }
             system.systemClose();
         }
-    }
-    
-    private String encryptDecrypt(String text ,String key){
-        if(text == null || key == null){
-            return null;
-        }
-        int lengthMax = text.length()>key.length()?text.length():key.length();
-
-        char[] textChar = text.toCharArray();
-        char[] keyChar = key.toCharArray();
-        int[] textInt = new int[lengthMax];
-        int[] keyInt = new int[lengthMax];
-        
-        for(int i=0; i<lengthMax; i++){
-            textInt[i] = 15;
-            keyInt[i] = 15;
-        }
-
-        StringBuilder result = new StringBuilder();
-
-        String binaryString = null;
-        char c;
-
-        for(int i=0; i<textChar.length; i++){
-            binaryString = Integer.toBinaryString(textChar[i]);
-            textInt[i] = Integer.parseInt(binaryString,2);
-        }
-
-        for(int i=0; i<keyChar.length; i++){
-            binaryString = Integer.toBinaryString(keyChar[i]);
-            keyInt[i] = Integer.parseInt(binaryString,2);
-        }
-
-        for(int i=0; i<lengthMax; i++) {
-            c = (char)(textInt[i]^keyInt[i]);
-            result.append(c);
-        }
-
-        return result.toString();
     }
     
     private String getInput(){
@@ -227,7 +191,7 @@ public class WonderfulAccountSystem {
             return false;
         }
         
-        ciphertext = encryptDecrypt(password,encryptKey);
+        ciphertext = encryptionAlgorithm.encrypt(password,encryptKey);
         
         String insertConent = "insert into secret values (null,'"+accountType+"','"+account+"','"+ciphertext+"','"+phonenum+"','"+remark+"')";
         insertIntoMysql(insertConent);
@@ -246,7 +210,7 @@ public class WonderfulAccountSystem {
         }
         
         String queryPass = queryFromMysql(accountType,account);
-        queryPass = encryptDecrypt(queryPass,encryptKey);
+        queryPass = encryptionAlgorithm.decrypt(queryPass,encryptKey);
         queryPass = transformToRealText(password.length(),queryPass);
         
         if(queryPass == null || !queryPass.equals(password)){
@@ -278,7 +242,7 @@ public class WonderfulAccountSystem {
         
         String ciphertext = queryFromMysql(accountType,account);
 
-        originalText = encryptDecrypt(ciphertext,encryptKey);
+        originalText = encryptionAlgorithm.decrypt(ciphertext,encryptKey);
         
         printMessage("密码:" + originalText);
         
@@ -485,9 +449,6 @@ public class WonderfulAccountSystem {
     }
     
 }
-
-
-
 
 
 
