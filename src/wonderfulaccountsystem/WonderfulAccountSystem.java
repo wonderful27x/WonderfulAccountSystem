@@ -78,7 +78,10 @@ public class WonderfulAccountSystem {
                 String operationType = system.getInput();
                 String command;
                 keepwork:while(true){
-                    if(operationType.equals("加密")){
+                    if(operationType.equals("show")){
+                        system.showAll();
+                        continue reStart;
+                    }else if(operationType.equals("加密")){
                         system.printMessage("正在加密...");
                         system.encrypt();
                     }else if(operationType.equals("解密")){
@@ -407,6 +410,8 @@ public class WonderfulAccountSystem {
                 input = inputString;
                 
                 reset();
+            }else if(arg0.isControlDown() && arg0.getKeyCode() == KeyEvent.VK_A){
+                showAll();
             }
         }
 
@@ -446,6 +451,55 @@ public class WonderfulAccountSystem {
             builder.append("*");
         }
         return builder.toString();
+    }
+    
+    //显示所有的账号信息
+    private void showAll(){
+        ResultSet result = null;
+        String querySql = "select * from secret";
+        StringBuilder builder = new StringBuilder();
+        try {
+             result = statement.executeQuery(querySql);
+             if(!result.next()){
+                 printMessage("无任何数据！");
+                 return;
+            }else{
+                 while(result.next()){
+                     builder.setLength(0);
+                     builder.append("id: ");
+                     builder.append(result.getString("id"));
+                     builder.append("\n");
+                     builder.append("type: ");
+                     builder.append(result.getString("type"));
+                     builder.append("\n");
+                     builder.append("account: ");
+                     builder.append(result.getString("account"));
+                     builder.append("\n");
+                     builder.append("password: ");
+                     builder.append(result.getString("password"));
+                     builder.append("\n");
+                     builder.append("phonenum: ");
+                     builder.append(result.getString("phonenum"));
+                     builder.append("\n");
+                     builder.append("remark: ");
+                     builder.append(result.getString("remark"));
+                     builder.append("\n");
+                     printMessage(builder.toString());
+                 }
+             } 
+        } catch (SQLException ex) {
+            printMessage("查询失败！");
+            Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            if(result != null){
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } 
+       
     }
     
 }
