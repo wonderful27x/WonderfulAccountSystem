@@ -24,8 +24,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /**
- *
- * @author Acer
+ * @Author wonderful
+ * @Description 德芙账号管理系统
+ * @Date 2019-8-30
  */
 public class WonderfulAccountSystem {
 
@@ -45,7 +46,7 @@ public class WonderfulAccountSystem {
 //    private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver"; 
 //    private static final String MYSQL_URL = "jdbc:mysql://localhost:3306/secretdocument";
     private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String MYSQL_URL ="jdbc:mysql://localhost:3306/" + "secretdocument" + "?useSSL=false&serverTimezone=UTC";
+    private static final String MYSQL_URL ="jdbc:mysql://localhost:3306/" + "secret_db" + "?useSSL=false&serverTimezone=UTC";
     private static final String MYSQL_USER = "root";
     
     private static Connection connection;
@@ -76,6 +77,7 @@ public class WonderfulAccountSystem {
             while(true){
                 system.printMessage("请选择操作模式：加密 or 解密");
                 String operationType = system.getInput();
+                system.checkForselect(operationType);
                 String command;
                 keepwork:while(true){
                     if(operationType.equals("show")){
@@ -93,6 +95,7 @@ public class WonderfulAccountSystem {
                         continue reStart;   
                     }
                     command = system.getInput();
+                    system.checkForselect(command);
                     if(command.equals("exit") || operationType.equals("EXIT")){
                         break reStart;
                     }else if(command.equals("")){
@@ -116,7 +119,13 @@ public class WonderfulAccountSystem {
     private String getInput(){
         input = null;
         while(input == null){
-           System.out.println("");
+           //System.out.println("");
+           try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         return input;
     }
@@ -166,22 +175,28 @@ public class WonderfulAccountSystem {
         String ciphertext;
         
         printMessage("请输入类型:");
-        accountType = getInput();
+        //accountType = getInput();
+        accountType = checkAndGetInput();
         printMessage("请输入账号:");
-        account = getInput();
+        //account = getInput();
+        account = checkAndGetInput();
         printMessage("请输入密码:");
         encryption = true;
         changeEditType(true);
         edit.enableInputMethods(false);//禁掉输入法
-        password = getInput();
+        //password = getInput();
+        password = checkAndGetInput();
         printMessage("请输入绑定手机号:");
-        phonenum = getInput();
+        //phonenum = getInput();
+        phonenum = checkAndGetInput();
         printMessage("请输入备注:");
-        remark = getInput();
+        //remark = getInput();
+        remark = checkAndGetInput();
         printMessage("请输入密钥:");
         encryption = true;
         changeEditType(true);
-        encryptKey = getInput();
+        //encryptKey = getInput();
+        encryptKey = checkAndGetInput();
         
         if(password.length()<7){
             printMessage("密码太短，密钥容易被破解,数据将被忽略！");
@@ -199,7 +214,8 @@ public class WonderfulAccountSystem {
         String insertConent = "insert into secret values (null,'"+accountType+"','"+account+"','"+ciphertext+"','"+phonenum+"','"+remark+"')";
         insertIntoMysql(insertConent);
         
-        String executeCommand = getInput();
+        //String executeCommand = getInput();
+        String executeCommand = checkAndGetInput();
         if(executeCommand.equals("execute")){
             try {
                 connection.commit();
@@ -235,13 +251,16 @@ public class WonderfulAccountSystem {
         String originalText = null;
         
         printMessage("请输入类型:");
-        accountType = getInput();
+        //accountType = getInput();
+        accountType = checkAndGetInput();
         printMessage("请输入账号:");
-        account = getInput();
+        //account = getInput();
+        account = checkAndGetInput();
         printMessage("请输入密钥:");
         encryption = true;
         changeEditType(true);
-        encryptKey = getInput();
+        //encryptKey = getInput();
+        encryptKey = checkAndGetInput();
         
         String ciphertext = queryFromMysql(accountType,account);
 
@@ -451,6 +470,114 @@ public class WonderfulAccountSystem {
             builder.append("*");
         }
         return builder.toString();
+    }
+
+    //先检测input，再返回
+    private String checkAndGetInput(){
+        String content = null;
+        do{
+            content = getInput();
+        }while(checkForselect(content));
+
+        return content;
+    }
+
+    //支持mysql查询语句,true代表是sql语句
+    private boolean checkForselect(String querySql){
+
+        //只有查询语句以select 开头才进行查询，否则认为是其他命令
+        if(querySql == null || !querySql.startsWith("select "))return false;
+
+        System.out.println("sql query: " + querySql + "...");
+
+        ResultSet result = null;
+        StringBuilder builder = new StringBuilder();
+        try {
+             result = statement.executeQuery(querySql);
+             
+            if(!result.next()){
+                printMessage("无任何数据！");
+                return true;
+            }
+
+            do {
+                builder.setLength(0);
+                String value = null;
+
+                value = getFromResult(result, "id");
+                if(value != null){
+                   builder.append("id: ");
+                   builder.append(value);
+                   builder.append("\n");
+                }
+
+                value = getFromResult(result, "type");
+                if(value != null){
+                   builder.append("type: ");
+                   builder.append(value);
+                   builder.append("\n");
+                }
+
+                value = getFromResult(result,"account");
+                if(value != null){
+                   builder.append("account: ");
+                   builder.append(value);
+                   builder.append("\n");
+                }
+
+                value = getFromResult(result,"password");
+                if(value != null){
+                   builder.append("password: ");
+                   builder.append(value);
+                   builder.append("\n");
+                }
+
+                value = getFromResult(result, "phonenum");
+                if(value != null){
+                   builder.append("phonenum: ");
+                   builder.append(value);
+                   builder.append("\n");
+                }
+
+                value = getFromResult(result, "remark");
+                if(value != null){
+                   builder.append("remark: ");
+                   builder.append(value);
+                   builder.append("\n");
+                }
+
+                printMessage(builder.toString());
+
+            }while(result.next());
+                     
+       } catch (SQLException ex) {
+            printMessage("查询失败！");
+            Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            if(result != null){
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } 
+
+        return true;
+    }
+
+    private String getFromResult(ResultSet result,String key){
+        if(result == null || key == null)return null;
+
+        String value = null;
+        try{
+            value = result.getString(key);
+            System.out.println("key: " + key + " value: " + value);
+        }catch(SQLException ex){
+            Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex); 
+        }
+
+        return value;
     }
     
     //显示所有的账号信息
