@@ -149,14 +149,16 @@ public class WonderfulAccountSystem {
             if(password.equals("exit") || password.equals("EXIT")){
                 return -1;
             }
-            printMessage("初始化异常！");
+            Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+            printMessage("初始化异常！\n" + ex.getMessage());
             Thread.sleep(1000);
             return 0;
         } catch (SQLException ex) {
             if(password.equals("exit") || password.equals("EXIT")){
                 return -1;
             }
-            printMessage("初始化异常！");
+            Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+            printMessage("初始化异常！\n" + ex.getMessage());
             Thread.sleep(1000);
             return 0;
         }
@@ -220,8 +222,8 @@ public class WonderfulAccountSystem {
             try {
                 connection.commit();
             } catch (SQLException ex) {
-                printMessage("执行失败！");
                 Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+                printMessage("执行失败！\n" + ex.getMessage());
             }
         }else{
             printMessage("错误代码");
@@ -281,8 +283,8 @@ public class WonderfulAccountSystem {
                  ciphertext = result.getString("password");
             } 
         } catch (SQLException ex) {
-            printMessage("查询失败！");
             Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+            printMessage("查询失败！\n" + ex.getMessage());
         }finally{
             if(result != null){
                 result.close();
@@ -297,8 +299,8 @@ public class WonderfulAccountSystem {
             connection.rollback();
             statement.executeUpdate(insertSql);
         } catch (SQLException ex) {
-            printMessage("插入数据失败！");
             Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+            printMessage("插入数据失败！\n" + ex.getMessage());
         } 
         return true;
     }
@@ -309,8 +311,8 @@ public class WonderfulAccountSystem {
             statement.executeUpdate(insertSql);
             connection.commit();
         } catch (SQLException ex) {
-            printMessage("删除数据失败！");
             Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+            printMessage("删除数据失败！\n" + ex.getMessage());
         }
         return true;
     }
@@ -551,8 +553,8 @@ public class WonderfulAccountSystem {
             }while(result.next());
                      
        } catch (SQLException ex) {
-            printMessage("查询失败！");
             Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+            printMessage("查询失败！\n" + ex.getMessage());
         }finally{
             if(result != null){
                 try {
@@ -615,8 +617,8 @@ public class WonderfulAccountSystem {
                  }
              } 
         } catch (SQLException ex) {
-            printMessage("查询失败！");
             Logger.getLogger(WonderfulAccountSystem.class.getName()).log(Level.SEVERE, null, ex);
+            printMessage("查询失败！\n" + ex.getMessage());
         }finally{
             if(result != null){
                 try {
